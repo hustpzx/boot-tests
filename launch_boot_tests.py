@@ -61,7 +61,7 @@ m5_binary = Artifact.registerArtifact(
     typ = 'binary',
     name = 'm5',
     path = 'gem5/util/m5/build/x86/out/m5',
-    cmd = 'gem5/util/m5',
+    cwd = 'gem5/util/m5',
     inputs = [gem5_repo,],
     documentation = 'm5 utility'
 )
