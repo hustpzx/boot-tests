@@ -26,7 +26,7 @@ packer = Artifact.registerArtifact(
 )
 
 experiments_repo = Artifact.registerArtifact(
-    command = 'git clone git@github.com:hustpzx/boot_tests.git',
+    command = 'git clone https://github.com/hustpzx/boot_tests.git', #git@github.com:hustpzx/boot_tests.git',
     typ = 'git repo',
     name = 'boot_tests',
     path = './',

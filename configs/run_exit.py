@@ -38,6 +38,7 @@ import time
 import m5
 import m5.ticks
 from m5.objects import *
+import ruby_system
 
 sys.path.append('gem5/configs/common/') # For the next line...
 import SimpleOpts
@@ -45,6 +46,7 @@ import SimpleOpts
 from system import *
 
 sys.path.append('config/system/')
+import system1 ruby_system
 
 from system1 import MySystem
 from ruby_system import MyRubySystem
