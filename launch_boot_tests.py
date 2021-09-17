@@ -97,7 +97,7 @@ gem5_binary_MOESI_CMP_directory = Artifact.registerArtifact(
     typ = 'gem5 binary',
     name = 'gem5',
     cwd = 'gem5/',
-    path =  'gem5/build/X86_MOESI_CMP_directory/gem5.opt',
+    path =  'gem5/build/MOESI_CMP_directory/gem5.opt',
     inputs = [gem5_repo,],
     documentation = 'gem5 binary based on v20.1.0.0'
 )
