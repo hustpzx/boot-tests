@@ -27,5 +27,9 @@
 #
 # Authors: Jason Lowe-Power
 
-#from system import MySystem
-#from ruby_system import MyRubySystem
+import sys
+
+sys.path.append('config/system/')
+
+from system import MySystem
+from ruby_system import MyRubySystem
