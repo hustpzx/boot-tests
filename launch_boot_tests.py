@@ -26,7 +26,7 @@ packer = Artifact.registerArtifact(
 )
 
 experiments_repo = Artifact.registerArtifact(
-    command = 'git clone https://github.com/hustpzx/boot_tests.git',
+    command = 'git clone git@github.com:hustpzx/boot_tests.git',
     typ = 'git repo',
     name = 'boot_tests',
     path = './',
@@ -133,9 +133,9 @@ linux_binaries = {
 
 if __name__ == "__main__":
     boot_types = ['init']
-    num_cpus = ['1', '2']#, '4', '8']
-    cpu_types = ['kvm', 'atomic']#, 'simple', 'o3']
-    mem_types = ['MI_example', 'MESI_Two_Level'] #, 'MOESI_CMP_directory']
+    num_cpus = ['1']#, '2']#, '4', '8']
+    cpu_types = ['kvm']#, 'atomic']#, 'simple', 'o3']
+    mem_types = ['MI_example'#], 'MESI_Two_Level'] #, 'MOESI_CMP_directory']
 
     def createRun(linux, boot_type, cpu, num_cpu, mem):
 
