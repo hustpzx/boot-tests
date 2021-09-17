@@ -111,7 +111,7 @@ linux_repo = Artifact.registerArtifact(
     documentation = 'linux kernel source code repo from Sept.17-2021'
 )
 
-linuxes = ['5.2.3', '4.19.83']#, '4.14.134', '4.9.186', '4.4.186']
+linuxes = ['5.2.3']#, '4.19.83']#, '4.14.134', '4.9.186', '4.4.186']
 linux_binaries = {
     version: Artifact.registerArtifact(
                 name = f'vmlinux-{version}',
