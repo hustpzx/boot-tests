@@ -45,10 +45,12 @@ import SimpleOpts
 
 from system import *
 
-sys.path.append('config/system/')
-import system1, ruby_system
-
+sys.path.append('configs/system/')
+import system1
 from system1 import MySystem
+
+sys.path.append('configs/system/')
+import ruby_system
 from ruby_system import MyRubySystem
 
 SimpleOpts.set_usage(
