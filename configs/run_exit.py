@@ -46,7 +46,8 @@ import SimpleOpts
 from system import *
 
 sys.path.append('config/system/')
-import system1 ruby_system
+import system1
+import ruby_system
 
 from system1 import MySystem
 from ruby_system import MyRubySystem
