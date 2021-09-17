@@ -44,6 +44,11 @@ import SimpleOpts
 
 from system import *
 
+sys.path.append('config/system/')
+
+from system import MySystem
+from ruby_system import MyRubySystem
+
 SimpleOpts.set_usage(
     "usage: %prog [options] kernel disk cpu_type mem_sys num_cpus boot_type")
 
