@@ -46,7 +46,7 @@ from system import *
 
 sys.path.append('config/system/')
 
-from system import MySystem
+from system1 import MySystem
 from ruby_system import MyRubySystem
 
 SimpleOpts.set_usage(
