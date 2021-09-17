@@ -160,7 +160,7 @@ if __name__ == "__main__":
             'disk-image/boot-exit/boot-exit-image/boot-exit',
             linux_binaries[linux], disk_image,
             cpu, mem, num_cpu, boot_type,
-            time = 10*60*60 # 10 hours
+            timeout = 10*60*60 # 10 hours
         )
 
 
