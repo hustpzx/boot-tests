@@ -71,7 +71,7 @@ disk_image = Artifact.registerArtifact(
     typ = 'disk image',
     name = 'boot-disk',
     cwd = 'disk-image',
-    pwth = 'disk-image/boot-exit/boot-exit-image/boot-exit',
+    path = 'disk-image/boot-exit/boot-exit-image/boot-exit',
     inputs = [packer, experiments_repo, m5_binary,],
     documentation = 'Ubuntu with m5 utility installed and root auto login'
 )
