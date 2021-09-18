@@ -27,8 +27,14 @@
 #
 # Authors: Jason Lowe-Power
 
-from gem5.src.mem.DRAMInterface import DDR3_1600_8x8
-from gem5.src.mem.MemCtrl import MemCtrl
+#from gem5.src.mem.DRAMInterface import DDR3_1600_8x8
+#from gem5.src.mem.MemCtrl import MemCtrl
+import sys
+
+sys.path.append('gem5/src/mem')
+from DRAMInterface import DDR3_1600_8x8
+from MemCtrl import MemCtrl
+
 import m5
 from m5.objects import *
 from m5.util import convert
