@@ -133,7 +133,7 @@ linux_binaries = {
 
 if __name__ == "__main__":
     boot_types = ['init']
-    num_cpus = ['4']#, '2'], '4', '8']
+    num_cpus = ['1']#, '2'], '4', '8']
     cpu_types = ['kvm']#, 'atomic'], 'simple', 'o3']
     mem_types = ['MI_example']#, 'MESI_Two_Level'], 'MOESI_CMP_directory']
 
