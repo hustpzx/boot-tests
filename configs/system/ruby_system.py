@@ -27,6 +27,8 @@
 #
 # Authors: Jason Lowe-Power
 
+from gem5.src.mem.DRAMInterface import DDR3_1600_8x8
+from gem5.src.mem.MemCtrl import MemCtrl
 import m5
 from m5.objects import *
 from m5.util import convert
@@ -133,7 +135,7 @@ class MyRubySystem(System):
 
     def _createMemoryControllers(self, num, cls):
         self.mem_cntrls = [
-            cls(range = self.mem_ranges[0])
+            MemCtrl(dram = cls(range = self.mem_ranges[0]))
             for i in range(num)
         ]
 
