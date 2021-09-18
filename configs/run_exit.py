@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2016 Jason Lowe-Power
+# Copyright (c) 2021 The Regents of the University of California
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,89 +23,62 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Authors: Jason Lowe-Power
-
 """
 """
-
-import errno
-import os
-import sys
 import time
-
+import argparse
 import m5
 import m5.ticks
 from m5.objects import *
-
-sys.path.append('gem5/configs/common/') # For the next line...
-import SimpleOpts
-
 from system import *
-
-sys.path.append('configs/system/')
-import system1
-from system1 import MySystem
-
-sys.path.append('configs/system/')
-import ruby_system
-from ruby_system import MyRubySystem
-
-SimpleOpts.set_usage(
-    "usage: %prog [options] kernel disk cpu_type mem_sys num_cpus boot_type")
-
-SimpleOpts.add_option("--allow_listeners", default=False, action="store_true",
-                      help="Listeners disabled by default")
-
+supported_protocols = ["classic", "MI_example", "MESI_Two_Level",
+                       "MOESI_CMP_directory"]
+supported_cpu_types = ['kvm', 'atomic', 'simple', 'o3']
+def parse_options():
+    parser = argparse.ArgumentParser(description='For use with gem5. Runs a '
+                'simple system through Linux boot. Expects the disk image to '
+                'call the simulator exit event after boot. Only works with '
+                'x86 ISA.')
+    parser.add_argument("--allow_listeners", default=False,
+                        action="store_true",
+                        help="Listeners disabled by default")
+    parser.add_argument("kernel", help="Path to the kernel binary to boot")
+    parser.add_argument("disk", help="Path to the disk image to boot")
+    parser.add_argument("cpu_type", choices=supported_cpu_types,
+                        help="The type of CPU to use in the system")
+    parser.add_argument("mem_sys", choices=supported_protocols,
+                        help="Type of memory system or coherence protocol")
+    parser.add_argument("num_cpus", type=int, help="Number of CPU cores")
+    parser.add_argument("boot_type", choices=["init", "systemd"],
+                        help="How to boot the kernel. Either to a simple init "
+                        "script or all of the way through systemd")
+    return parser.parse_args()
 if __name__ == "__m5_main__":
-    (opts, args) = SimpleOpts.parse_args()
-
-    if len(args) != 6:
-        SimpleOpts.print_help()
-        m5.fatal("Bad arguments")
-
-    kernel, disk, cpu_type, mem_sys, num_cpus, boot_type = args
-    num_cpus = int(num_cpus)
-
+    args = parse_options()
     # create the system we are going to simulate
-    ruby_protocols = [ "MI_example", "MESI_Two_Level", "MOESI_CMP_directory"]
-    if mem_sys == "classic":
-        system = MySystem(kernel, disk, cpu_type, num_cpus, opts)
-    elif mem_sys in ruby_protocols:
-        system = MyRubySystem(kernel, disk, cpu_type, mem_sys, num_cpus, opts)
+    if args.mem_sys == "classic":
+        system = MySystem(args.kernel, args.disk, args.cpu_type, args.num_cpus)
     else:
-        m5.fatal("Bad option for mem_sys, should be "
-        "{}, or 'classic'".format(', '.join(ruby_protocols)))
-
-    if boot_type == "init":
+        system = MyRubySystem(args.kernel, args.disk, args.cpu_type,
+                              args.mem_sys, args.num_cpus)
+    if args.boot_type == "init":
         # Simply run "exit.sh"
         system.workload.command_line += ' init=/root/exit.sh'
-    else:
-        if boot_type != "systemd":
-            SimpleOpts.print_help()
-            m5.fatal("Bad option for boot_type. init or systemd.")
-
     # set up the root SimObject and start the simulation
     root = Root(full_system = True, system = system)
-
     if system.getHostParallel():
         # Required for running kvm on multiple host cores.
         # Uses gem5's parallel event queue feature
         # Note: The simulator is quite picky about this number!
         root.sim_quantum = int(1e9) # 1 ms
-
     # Required for long-running jobs
-    if not opts.allow_listeners:
+    if not args.allow_listeners:
         m5.disableAllListeners()
-
     # instantiate all of the objects we've created above
     m5.instantiate()
-
     globalStart = time.time()
-
     print("Running the simulation")
     exit_event = m5.simulate()
-
     if exit_event.getCause() != "m5_exit instruction encountered":
         print("Failed to exit correctly")
         exit(1)

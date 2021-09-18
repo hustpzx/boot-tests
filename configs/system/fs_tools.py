@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2016 Jason Lowe-Power
+# Copyright (c) 2021 The Regents of the University of California
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,16 +23,11 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Authors: Jason Lowe-Power
-
 from m5.objects import IdeDisk, CowDiskImage, RawDiskImage
-
 class CowDisk(IdeDisk):
-
     def __init__(self, filename):
         super(CowDisk, self).__init__()
-        self.driveID = 'device0' #'master'
+        self.driveID = 'device0'
         self.image = CowDiskImage(child=RawDiskImage(read_only=True),
                                   read_only=False)
         self.image.child.image_file = filename

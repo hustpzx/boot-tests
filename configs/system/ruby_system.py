@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2016 Jason Lowe-Power
+# Copyright (c) 2021 The Regents of the University of California
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,74 +23,47 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Authors: Jason Lowe-Power
-
-#from gem5.src.mem.DRAMInterface import DDR3_1600_8x8
-#from gem5.src.mem.MemCtrl import MemCtrl
-'''
-import sys
-sys.path.append('gem5/src/mem')
-from DRAMInterface import DDR3_1600_8x8
-from MemCtrl import MemCtrl
-'''
 import m5
 from m5.objects import *
-from m5.util import convert
-from fs_tools import *
-
-
+from .fs_tools import *
 class MyRubySystem(System):
-
-    def __init__(self, kernel, disk, cpu_type, mem_sys, num_cpus, opts):
+    def __init__(self, kernel, disk, cpu_type, mem_sys, num_cpus):
         super(MyRubySystem, self).__init__()
-        self._opts = opts
-
         self._host_parallel = cpu_type == "kvm"
-
         # Set up the clock domain and the voltage domain
         self.clk_domain = SrcClockDomain()
         self.clk_domain.clock = '3GHz'
         self.clk_domain.voltage_domain = VoltageDomain()
-
         self.mem_ranges = [AddrRange(Addr('3GB')), # All data
                            AddrRange(0xC0000000, size=0x100000), # For I/0
                            ]
-
         self.initFS(num_cpus)
-
         # Replace these paths with the path to your disk images.
         # The first disk is the root disk. The second could be used for swap
         # or anything else.
         self.setDiskImages(disk, disk)
-
         # Change this path to point to the kernel you want to use
         self.workload.object_file = kernel
         # Options specified on the kernel command line
         boot_options = ['earlyprintk=ttyS0', 'console=ttyS0', 'lpj=7999923',
                          'root=/dev/hda1']
-
         self.workload.command_line = ' '.join(boot_options)
-
         # Create the CPUs for our system.
         self.createCPU(cpu_type, num_cpus)
-
         self.createMemoryControllersDDR3()
-
         # Create the cache hierarchy for the system.
         if mem_sys == 'MI_example':
-            from MI_example_caches import MIExampleSystem
+            from .MI_example_caches import MIExampleSystem
             self.caches = MIExampleSystem()
         elif mem_sys == 'MESI_Two_Level':
-            from MESI_Two_Level import MESITwoLevelCache
+            from .MESI_Two_Level import MESITwoLevelCache
             self.caches = MESITwoLevelCache()
         elif mem_sys == 'MOESI_CMP_directory':
-            from MOESI_CMP_directory import MOESICMPDirCache
+            from .MOESI_CMP_directory import MOESICMPDirCache
             self.caches = MOESICMPDirCache()
         self.caches.setup(self, self.cpu, self.mem_cntrls,
-                          [self.pc.south_bridge.ide.dma, self.iobus.master],
+                          [self.pc.south_bridge.ide.dma, self.iobus.mem_side_ports],
                           self.iobus)
-
         if self._host_parallel:
             # To get the KVM CPUs to run on different host CPUs
             # Specify a different event queue for each CPU
@@ -99,13 +71,10 @@ class MyRubySystem(System):
                 for obj in cpu.descendants():
                     obj.eventq_index = 0
                 cpu.eventq_index = i + 1
-
     def getHostParallel(self):
         return self._host_parallel
-
     def totalInsts(self):
         return sum([cpu.totalInsts() for cpu in self.cpu])
-
     def createCPU(self, cpu_type, num_cpus):
         if cpu_type == "atomic":
             self.cpu = [AtomicSimpleCPU(cpu_id = i)
@@ -127,44 +96,32 @@ class MyRubySystem(System):
             self.mem_mode = 'timing'
         else:
             m5.fatal("No CPU type {}".format(cpu_type))
-
-        map(lambda c: c.createThreads(), self.cpu)
-        map(lambda c: c.createInterruptController(), self.cpu)
-
+        for cpu in self.cpu:
+            cpu.createThreads()
+            cpu.createInterruptController()
     def setDiskImages(self, img_path_1, img_path_2):
         disk0 = CowDisk(img_path_1)
         disk2 = CowDisk(img_path_2)
         self.pc.south_bridge.ide.disks = [disk0, disk2]
-
     def createMemoryControllersDDR3(self):
         self._createMemoryControllers(1, DDR3_1600_8x8)
-
     def _createMemoryControllers(self, num, cls):
         self.mem_cntrls = [
             MemCtrl(dram = cls(range = self.mem_ranges[0]))
             for i in range(num)
         ]
-
     def initFS(self, cpus):
         self.pc = Pc()
-
         self.workload = X86FsLinux()
-
         # North Bridge
         self.iobus = IOXBar()
-
         # connect the io bus
         # Note: pass in a reference to where Ruby will connect to in the future
         # so the port isn't connected twice.
         self.pc.attachIO(self.iobus, [self.pc.south_bridge.ide.dma])
-
-        self.intrctrl = IntrControl()
-
         ###############################################
-
         # Add in a Bios information structure.
         self.workload.smbios_table.structures = [X86SMBiosBiosInformation()]
-
         # Set up the Intel MP table
         base_entries = []
         ext_entries = []
@@ -223,7 +180,6 @@ class MyRubySystem(System):
             assignISAInt(i, i)
         self.workload.intel_mp_table.base_entries = base_entries
         self.workload.intel_mp_table.ext_entries = ext_entries
-
         entries = \
            [
             # Mark the first megabyte of memory as reserved
@@ -234,9 +190,7 @@ class MyRubySystem(System):
                     size = '%dB' % (self.mem_ranges[0].size() - 0x100000),
                     range_type = 1),
             ]
-
         # Reserve the last 16kB of the 32-bit address space for m5ops
         entries.append(X86E820Entry(addr = 0xFFFF0000, size = '64kB',
                                     range_type=2))
-
         self.workload.e820_table.entries = entries
