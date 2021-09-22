@@ -192,6 +192,9 @@ class MySystem(System):
         self.iocache.cpu_side = self.iobus.mem_side_ports
         self.iocache.mem_side = self.membus.cpu_side_ports
         ###############################################
+
+        self.intrctrl = IntrControl() # add from github gem5art-experiments system.py
+
         # Add in a Bios information structure.
         self.workload.smbios_table.structures = [X86SMBiosBiosInformation()]
         # Set up the Intel MP table

@@ -119,6 +119,8 @@ class MyRubySystem(System):
         # Note: pass in a reference to where Ruby will connect to in the future
         # so the port isn't connected twice.
         self.pc.attachIO(self.iobus, [self.pc.south_bridge.ide.dma])
+
+        self.intrctrl = IntrControl() 
         ###############################################
         # Add in a Bios information structure.
         self.workload.smbios_table.structures = [X86SMBiosBiosInformation()]
