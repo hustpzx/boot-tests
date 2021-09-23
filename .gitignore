@@ -5,7 +5,7 @@ results
 venv
 disk-image/packer
 disk-image/packer_1.4.3_linux_amd64.zip
-disk-image/boot-exit/boot-exit-image/boot-exit
+disk-image/boot-exit/boot-exit-image/
 disk-image/packer_cache
 gem5
 linux/
