@@ -111,7 +111,7 @@ linux_repo = Artifact.registerArtifact(
     documentation = 'linux kernel source code repo from Sept.17-2021'
 )
 
-linuxes = ['4.4.186']#['5.2.3']#, '4.19.83']#, '4.14.134', '4.9.186', '4.4.186']
+linuxes = ['4.19.83']#['5.2.3']#, '4.19.83']#, '4.14.134', '4.9.186', '4.4.186']
 linux_binaries = {
     version: Artifact.registerArtifact(
                 name = f'vmlinux-{version}',
@@ -134,7 +134,7 @@ linux_binaries = {
 if __name__ == "__main__":
     boot_types = ['init']
     num_cpus = ['1']#, '2'], '4', '8']
-    cpu_types = ['kvm']#, 'atomic'], 'simple', 'o3']
+    cpu_types = ['kvm', 'atomic', 'simple', 'o3']
     mem_types = [ 'classic']#'MI_example']#, 'MESI_Two_Level'], 'MOESI_CMP_directory']
 
     def createRun(linux, boot_type, cpu, num_cpu, mem):
