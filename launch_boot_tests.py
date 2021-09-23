@@ -56,21 +56,6 @@ gem5_binary = Artifact.registerArtifact(
     documentation = 'gem5 binary based on v20.1.0.0'
 )
 
-'''
-gem5_binary_p = Artifact.registerArtifact(
-    command = '''cd gem5;
-    git apply https://gem5-review.googlesource.com/c/public/gem5/+/12278
-    scons build/X86/gem5.opt -j8
-    ''',
-    typ = 'gem5 binary',
-    name = 'gem5',
-    cwd = 'gem5/',
-    path =  'gem5/build/X86/gem5.opt',
-    inputs = [gem5_repo,],
-    documentation = 'gem5 binary with patch to fix KVM problem on intel machine'
-)
-'''
-
 m5_binary = Artifact.registerArtifact(
     command = 'scons build/x86/out/m5',
     typ = 'binary',
